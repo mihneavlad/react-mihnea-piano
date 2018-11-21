@@ -6,7 +6,6 @@ import "react-piano/dist/styles.css";
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
 import "./index.css";
-import "./recorder.jsx";
 
 // webkitAudioContext fallback needed to support Safari
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -16,29 +15,108 @@ const noteRange = {
   first: MidiNumbers.fromNote("c1"),
   last: MidiNumbers.fromNote("g3")
 };
+
 const keyboardShortcuts = KeyboardShortcuts.create({
   firstNote: noteRange.first,
   lastNote: noteRange.last,
   keyboardConfig: KeyboardShortcuts.HOME_ROW
 });
 
-function App() {
-  return (
-    <div>
-      <h1>react-piano demos</h1>
+const recordAudio = () =>
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const recording = [];
 
-      <div className="mt-5">
-        <p>
-          Responsive piano which resizes to container's width. Try resizing the
-          window!
-        </p>
-        <button id="action" onclick="handleAction()">
-          Start recording...
-        </button>
-        <ResponsivePiano />
+    mediaRecorder.addEventListener("dataavailable", event => {
+      recording.push(event.data);
+
+      console.log(event.data);
+    });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const recordingBlob = new Blob(recording);
+          const audioUrl = URL.createObjectURL(recordingBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
+          resolve({ recordingBlob, audioUrl, play });
+        });
+
+        mediaRecorder.stop();
+      });
+
+    resolve({ start, stop });
+  });
+
+class App extends React.Component {
+  state = {
+    recorder: {},
+    recording: false,
+    playing: false
+  };
+
+  startRecording = async () => {
+    const recorder = await recordAudio();
+    recorder.start();
+    this.setState({
+      recorder: recorder,
+      recording: true
+    });
+  };
+
+  stopRecording = async () => {
+    const audio = await this.state.recorder.stop();
+
+    this.setState({
+      recorder: audio,
+      recording: false
+    });
+  };
+
+  playRecording = () => {
+    this.state.recorder.play();
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>react-piano demos</h1>
+
+        <div className="mt-5">
+          <p>
+            Responsive piano which resizes to container's width. Try resizing
+            the window!
+          </p>
+          <button
+            id="record"
+            onClick={this.startRecording}
+            disabled={this.state.recording}
+          >
+            Start recording...
+          </button>
+          <button
+            id="stop"
+            onClick={this.stopRecording}
+            disabled={!this.state.recording}
+          >
+            Stop recording...
+          </button>
+          <button
+            id="play"
+            onClick={this.playRecording}
+            disabled={this.state.recording}
+          >
+            Play recording...
+          </button>
+          <ResponsivePiano />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 function ResponsivePiano(props) {
