@@ -6,6 +6,7 @@ import "react-piano/dist/styles.css";
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
 import "./index.css";
+import "./recorder.jsx";
 
 // webkitAudioContext fallback needed to support Safari
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -31,6 +32,9 @@ function App() {
           Responsive piano which resizes to container's width. Try resizing the
           window!
         </p>
+        <button id="action" onclick="handleAction()">
+          Start recording...
+        </button>
         <ResponsivePiano />
       </div>
     </div>
