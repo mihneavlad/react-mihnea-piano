@@ -12,3 +12,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* PianoDarkTheme */
+
+.PianoDarkTheme .ReactPiano__Key--accidental {
+  background: #025d7d;
+  border: 1px solid #888;
+}
+.PianoDarkTheme .ReactPiano__Key--natural {
+  background: #013243;
+  border: 1px solid #888;
+  margin-right: 0;
+}
+.PianoDarkTheme .ReactPiano__Key--active.ReactPiano__Key--accidental {
+  background: #0396ca;
+}
+.PianoDarkTheme .ReactPiano__Key--active.ReactPiano__Key--natural {
+  background: #0396ca;
+}
