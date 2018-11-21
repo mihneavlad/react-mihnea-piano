@@ -52,9 +52,12 @@ const recordAudio = () =>
     resolve({ start, stop });
   });
 
+// Setting initial state, setting states for the various scenarios, start recording, stop recording, play recording.
+
 class App extends React.Component {
   state = {
     recorder: {},
+    player: {},
     recording: false,
     playing: false
   };
@@ -72,13 +75,15 @@ class App extends React.Component {
     const audio = await this.state.recorder.stop();
 
     this.setState({
-      recorder: audio,
+      player: audio,
       recording: false
     });
   };
 
   playRecording = () => {
-    this.state.recorder.play();
+    if (this.state.player.play) {
+      this.state.player.play();
+    }
   };
 
   render() {
@@ -108,7 +113,11 @@ class App extends React.Component {
           <button
             id="play"
             onClick={this.playRecording}
-            disabled={this.state.recording}
+            disabled={
+              this.state.recording ||
+              this.state.playing ||
+              !this.state.player.play
+            }
           >
             Play recording...
           </button>
