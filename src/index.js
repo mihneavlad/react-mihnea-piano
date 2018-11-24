@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Piano, KeyboardShortcuts, MidiNumbers } from "react-piano";
+import { Piano, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
 
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
+import MyPiano from "./MyPiano";
 import "./index.css";
 
 // webkitAudioContext fallback needed to support Safari
@@ -15,12 +16,6 @@ const noteRange = {
   first: MidiNumbers.fromNote("c1"),
   last: MidiNumbers.fromNote("g3")
 };
-
-const keyboardShortcuts = KeyboardShortcuts.create({
-  firstNote: noteRange.first,
-  lastNote: noteRange.last,
-  keyboardConfig: KeyboardShortcuts.HOME_ROW
-});
 
 const recordAudio = () =>
   new Promise(async resolve => {
@@ -86,70 +81,31 @@ class App extends React.Component {
     }
   };
 
-  render() {
+  render(props) {
     return (
       <div>
-        <h1>react-piano demos</h1>
-
-        <div className="mt-5">
-          <p>
-            Responsive piano which resizes to container's width. Try resizing
-            the window!
-          </p>
-          <button
-            id="record"
-            onClick={this.startRecording}
-            disabled={this.state.recording}
-          >
-            Start recording...
-          </button>
-          <button
-            id="stop"
-            onClick={this.stopRecording}
-            disabled={!this.state.recording}
-          >
-            Stop recording...
-          </button>
-          <button
-            id="play"
-            onClick={this.playRecording}
-            disabled={
-              this.state.recording ||
-              this.state.playing ||
-              !this.state.player.play
-            }
-          >
-            Play recording...
-          </button>
-          <ResponsivePiano />
-        </div>
+        <DimensionsProvider>
+          {({ containerWidth, containerHeight }) => (
+            <SoundfontProvider
+              // instrumentName="acoustic_grand_piano"
+              audioContext={audioContext}
+              hostname={soundfontHostname}
+              render={({ isLoading, playNote, stopNote }) => (
+                <MyPiano
+                  noteRange={noteRange}
+                  width={containerWidth}
+                  playNote={playNote}
+                  stopNote={stopNote}
+                  disabled={isLoading}
+                  {...props}
+                />
+              )}
+            />
+          )}
+        </DimensionsProvider>
       </div>
     );
   }
-}
-
-function ResponsivePiano(props) {
-  return (
-    <DimensionsProvider>
-      {({ containerWidth, containerHeight }) => (
-        <SoundfontProvider
-          // instrumentName="acoustic_grand_piano"
-          audioContext={audioContext}
-          hostname={soundfontHostname}
-          render={({ isLoading, playNote, stopNote }) => (
-            <Piano
-              noteRange={noteRange}
-              width={containerWidth}
-              playNote={playNote}
-              stopNote={stopNote}
-              disabled={isLoading}
-              {...props}
-            />
-          )}
-        />
-      )}
-    </DimensionsProvider>
-  );
 }
 
 const rootElement = document.getElementById("root");
