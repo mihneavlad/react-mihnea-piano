@@ -98,7 +98,7 @@ class App extends React.Component {
       <div>
         <h1 className="text-center mt-5">React Piano App by Mihnea</h1>
 
-        <div className="mt-5">
+        <div className="mt-5 text-center">
           <p>
             This is a piano app based on the react-piano package and the
             MediaStream Recording API !
