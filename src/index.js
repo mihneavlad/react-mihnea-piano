@@ -96,12 +96,12 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>react-piano demos</h1>
+        <h1 className="text-center mt-5">React Piano App by Mihnea</h1>
 
         <div className="mt-5">
           <p>
-            Responsive piano which resizes to container's width. Try resizing
-            the window!
+            This is a piano app based on the react-piano package and the
+            MediaStream Recording API !
           </p>
           <ResponsivePiano />
           <ButtonGroup className="d-flex justify-content-around">
@@ -111,7 +111,7 @@ class App extends React.Component {
               onClick={this.startRecording}
               disabled={this.state.recording}
             >
-              <span className="far fa-icons fa-6x">
+              <span className="far fa-icons fa-6x glyphicon">
                 <FontAwesomeIcon icon={faDotCircle} />
               </span>
             </Button>
@@ -121,7 +121,7 @@ class App extends React.Component {
               onClick={this.stopRecording}
               disabled={!this.state.recording}
             >
-              <span className="far fa-icons fa-6x">
+              <span className="far fa-icons fa-6x glyphicon">
                 <FontAwesomeIcon icon={faStopCircle} />
               </span>
             </Button>
@@ -135,7 +135,7 @@ class App extends React.Component {
                 !this.state.player.play
               }
             >
-              <span className="far fa-icons fa-6x">
+              <span className="far fa-icons fa-6x glyphicon">
                 <FontAwesomeIcon icon={faPlayCircle} />
               </span>
             </Button>

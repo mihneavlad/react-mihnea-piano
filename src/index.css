@@ -31,6 +31,32 @@ code {
   background: #0396ca;
 }
 
-/* .main-container {
-  min-height: 0vh;
-} */
+.glyphicon-small {
+  font-size: 1.2em;
+}
+
+.glyphicon-medium {
+  font-size: 2em;
+}
+
+.glyphicon-big {
+  font-size: 4em;
+}
+
+@media screen and (max-width: 299px) {
+  .glyphicon {
+    font-size: 1.2em;
+  }
+}
+
+@media screen and (min-width: 300px) and (max-width: 799px) {
+  .glyphicon {
+    font-size: 2em;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  .glyphicon {
+    font-size: 4em;
+  }
+}
