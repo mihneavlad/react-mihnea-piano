@@ -4,10 +4,21 @@ import { Piano, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, ButtonGroup } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
 import "./index.css";
+
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faPlayCircle,
+  faStopCircle,
+  faDotCircle,
+  faKey
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faPlayCircle, faKey);
 
 // webkitAudioContext fallback needed to support Safari
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -100,7 +111,9 @@ class App extends React.Component {
               onClick={this.startRecording}
               disabled={this.state.recording}
             >
-              Start recording...
+              <span className="far fa-icons fa-6x">
+                <FontAwesomeIcon icon={faDotCircle} />
+              </span>
             </Button>
             <Button
               className="mt-5"
@@ -108,7 +121,9 @@ class App extends React.Component {
               onClick={this.stopRecording}
               disabled={!this.state.recording}
             >
-              Stop recording...
+              <span className="far fa-icons fa-6x">
+                <FontAwesomeIcon icon={faStopCircle} />
+              </span>
             </Button>
             <Button
               className="mt-5"
@@ -120,7 +135,9 @@ class App extends React.Component {
                 !this.state.player.play
               }
             >
-              Play recording...
+              <span className="far fa-icons fa-6x">
+                <FontAwesomeIcon icon={faPlayCircle} />
+              </span>
             </Button>
           </ButtonGroup>
         </div>
