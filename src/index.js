@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Piano, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
+import _ from "lodash";
 
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
@@ -17,92 +18,118 @@ const noteRange = {
   last: MidiNumbers.fromNote("g3")
 };
 
-// const recordAudio = () =>
-//   new Promise(async resolve => {
-//     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-//     const mediaRecorder = new MediaRecorder(stream);
-//     const recording = [];
-//
-//     mediaRecorder.addEventListener("dataavailable", event => {
-//       recording.push(event.data);
-//
-//       console.log(event.data);
-//     });
-//
-//     const start = () => mediaRecorder.start();
-//
-//     const stop = () =>
-//       new Promise(resolve => {
-//         mediaRecorder.addEventListener("stop", () => {
-//           const recordingBlob = new Blob(recording);
-//           const audioUrl = URL.createObjectURL(recordingBlob);
-//           const audio = new Audio(audioUrl);
-//           const play = () => audio.play();
-//           resolve({ recordingBlob, audioUrl, play });
-//         });
-//
-//         mediaRecorder.stop();
-//       });
-//
-//     resolve({ start, stop });
-//   });
-
 // Setting initial state, setting states for the various scenarios, start recording, stop recording, play recording.
 
 class App extends React.Component {
   state = {
-    recorder: {},
-    player: {},
-    recording: false,
-    playing: false
+    recording: {
+      mode: "RECORDING",
+      events: [],
+      currentTime: 0,
+      currentEvents: []
+    }
   };
 
-  // startRecording = async () => {
-  //   const recorder = await recordAudio();
-  //   recorder.start();
-  //   this.setState({
-  //     recorder: recorder,
-  //     recording: true
-  //   });
-  // };
-  //
-  // stopRecording = async () => {
-  //   const audio = await this.state.recorder.stop();
-  //
-  //   this.setState({
-  //     player: audio,
-  //     recording: false
-  //   });
-  // };
-  //
-  // playRecording = () => {
-  //   if (this.state.player.play) {
-  //     this.state.player.play();
-  //   }
-  // };
+  constructor(props) {
+    super(props);
 
-  render(props) {
+    this.scheduledEvents = [];
+  }
+
+  getRecordingEndTime = () => {
+    if (this.state.recording.events.length === 0) {
+      return 0;
+    }
+    return Math.max(
+      ...this.state.recording.events.map(event => event.time + event.duration)
+    );
+  };
+
+  setRecording = value => {
+    this.setState({
+      recording: Object.assign({}, this.state.recording, value)
+    });
+  };
+
+  onClickPlay = () => {
+    this.setRecording({
+      mode: "PLAYING"
+    });
+    const startAndEndTimes = _.uniq(
+      _.flatMap(this.state.recording.events, event => [
+        event.time,
+        event.time + event.duration
+      ])
+    );
+    startAndEndTimes.forEach(time => {
+      this.scheduledEvents.push(
+        setTimeout(() => {
+          const currentEvents = this.state.recording.events.filter(event => {
+            return event.time <= time && event.time + event.duration > time;
+          });
+          this.setRecording({
+            currentEvents
+          });
+        }, time * 1000)
+      );
+    });
+    // Stop at the end
+    setTimeout(() => {
+      this.onClickStop();
+    }, this.getRecordingEndTime() * 1000);
+  };
+
+  onClickStop = () => {
+    this.scheduledEvents.forEach(scheduledEvent => {
+      clearTimeout(scheduledEvent);
+    });
+    this.setRecording({
+      mode: "RECORDING",
+      currentEvents: []
+    });
+  };
+
+  onClickClear = () => {
+    this.onClickStop();
+    this.setRecording({
+      events: [],
+      mode: "RECORDING",
+      currentEvents: [],
+      currentTime: 0
+    });
+  };
+
+  render() {
     return (
       <div>
-        <DimensionsProvider>
-          {({ containerWidth, containerHeight }) => (
-            <SoundfontProvider
-              // instrumentName="acoustic_grand_piano"
-              audioContext={audioContext}
-              hostname={soundfontHostname}
-              render={({ isLoading, playNote, stopNote }) => (
-                <MyPiano
-                  noteRange={noteRange}
-                  width={containerWidth}
-                  playNote={playNote}
-                  stopNote={stopNote}
-                  disabled={isLoading}
-                  {...props}
-                />
-              )}
-            />
-          )}
-        </DimensionsProvider>
+        <h1 className="h3">react-piano recording + playback demo</h1>
+        <div className="mt-5">
+          <SoundfontProvider
+            instrumentName="acoustic_grand_piano"
+            audioContext={audioContext}
+            hostname={soundfontHostname}
+            render={({ isLoading, playNote, stopNote }) => (
+              <MyPiano
+                recording={this.state.recording}
+                setRecording={this.setRecording}
+                noteRange={noteRange}
+                width={300}
+                playNote={playNote}
+                stopNote={stopNote}
+                disabled={isLoading}
+              />
+            )}
+          />
+        </div>
+        <div className="mt-5">
+          <button onClick={this.onClickPlay}>Play</button>
+          <button onClick={this.onClickStop}>Stop</button>
+          <button onClick={this.onClickClear}>Clear</button>
+        </div>
+        <div className="mt-5">
+          <strong>Recorded notes</strong>
+          <div>{JSON.stringify(this.state.recording.events)}</div>
+        </div>
       </div>
     );
   }
