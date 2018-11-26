@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Piano, KeyboardShortcuts, MidiNumbers } from "react-piano";
+import { Piano, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Button, ButtonGroup } from "reactstrap";
 
 import DimensionsProvider from "./DimensionsProvider";
 import SoundfontProvider from "./SoundfontProvider";
@@ -15,12 +17,6 @@ const noteRange = {
   first: MidiNumbers.fromNote("c1"),
   last: MidiNumbers.fromNote("g3")
 };
-
-const keyboardShortcuts = KeyboardShortcuts.create({
-  firstNote: noteRange.first,
-  lastNote: noteRange.last,
-  keyboardConfig: KeyboardShortcuts.HOME_ROW
-});
 
 const recordAudio = () =>
   new Promise(async resolve => {
@@ -96,32 +92,37 @@ class App extends React.Component {
             Responsive piano which resizes to container's width. Try resizing
             the window!
           </p>
-          <button
-            id="record"
-            onClick={this.startRecording}
-            disabled={this.state.recording}
-          >
-            Start recording...
-          </button>
-          <button
-            id="stop"
-            onClick={this.stopRecording}
-            disabled={!this.state.recording}
-          >
-            Stop recording...
-          </button>
-          <button
-            id="play"
-            onClick={this.playRecording}
-            disabled={
-              this.state.recording ||
-              this.state.playing ||
-              !this.state.player.play
-            }
-          >
-            Play recording...
-          </button>
           <ResponsivePiano />
+          <ButtonGroup className="d-flex justify-content-around">
+            <Button
+              className="mt-5"
+              id="record"
+              onClick={this.startRecording}
+              disabled={this.state.recording}
+            >
+              Start recording...
+            </Button>
+            <Button
+              className="mt-5"
+              id="stop"
+              onClick={this.stopRecording}
+              disabled={!this.state.recording}
+            >
+              Stop recording...
+            </Button>
+            <Button
+              className="mt-5"
+              id="play"
+              onClick={this.playRecording}
+              disabled={
+                this.state.recording ||
+                this.state.playing ||
+                !this.state.player.play
+              }
+            >
+              Play recording...
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
     );
