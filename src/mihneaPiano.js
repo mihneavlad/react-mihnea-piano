@@ -24,20 +24,20 @@ class mihneaPiano extends React.Component {
       activeAudioNodes: {},
       instrument: this.instrumentName
     };
-    console.log(this.instrumentName);
+  }
+
+  componentDidMount() {
+    this.loadInstrument(this.props.instrumentName);
+    console.log(this.props.instrumentName);
   }
 
   loadInstrument = instrumentName => {
-    // Re-trigger loading state
     this.setState({
       instrument: null
     });
-    Soundfont.instrument(this.props.audioContext, instrumentName, {
+    Soundfont.instrument(this.props.audioContext, "acoustic_grand_piano", {
       format: this.props.format,
       soundfont: this.props.soundfont
-      // nameToUrl: (name, soundfont, format) => {
-      //   return `${this.props.hostname}/${soundfont}/${name}-${format}.js`;
-      // }
     }).then(instrument => {
       this.setState({
         instrument
