@@ -20,9 +20,9 @@ import {
 
 library.add(faPlayCircle, faKey);
 
-// webkitAudioContext fallback needed to support Safari
+// Taken from: https://developer.mozilla.org/en-US/docs/Web/API/AudioContext
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const soundfontHostname = "https://d1pzp51pvbm36p.cloudfront.net";
 
 const noteRange = {
   first: MidiNumbers.fromNote("c1"),
@@ -151,7 +151,6 @@ function ResponsivePiano(props) {
         <MihneaPiano
           instrumentName="acoustic_grand_piano"
           audioContext={audioContext}
-          hostname={soundfontHostname}
           render={({ isLoading, playNote, stopNote }) => (
             <Piano
               noteRange={noteRange}

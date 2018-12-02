@@ -42,8 +42,12 @@ class mihneaPiano extends React.Component {
       this.setState({
         instrument
       });
+      console.log(instrument);
     });
   };
+
+  // REQUIRED BY DANIGB SOUNDFONT PLAYER
+  // resume() deprecated?BaseAudioContext
 
   playNote = midiNumber => {
     this.props.audioContext.resume().then(() => {
@@ -56,6 +60,8 @@ class mihneaPiano extends React.Component {
     });
   };
 
+  // REQUIRED BY DANIGB SOUNDFONT PLAYER
+  // resume() deprecated?BaseAudioContext
   stopNote = midiNumber => {
     this.props.audioContext.resume().then(() => {
       if (!this.state.activeAudioNodes[midiNumber]) {
