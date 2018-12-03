@@ -28,7 +28,7 @@ class MihneaPiano extends React.Component {
     super(props);
     this.state = {
       activeAudioNodes: {},
-      instrument: this.instrumentName
+      instrument: null
     };
   }
 
@@ -41,7 +41,7 @@ class MihneaPiano extends React.Component {
     this.setState({
       instrument: null
     });
-    Soundfont.instrument(this.props.audioContext, "acoustic_grand_piano", {
+    Soundfont.instrument(this.props.audioContext, instrumentName, {
       format: this.props.format,
       soundfont: this.props.soundfont
     }).then(instrument => {
@@ -58,6 +58,8 @@ class MihneaPiano extends React.Component {
   playNote = midiNumber => {
     this.props.audioContext.resume().then(() => {
       const audioNode = this.state.instrument.play(midiNumber);
+      console.log(audioNode);
+
       this.setState({
         activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, {
           [midiNumber]: audioNode
@@ -83,19 +85,19 @@ class MihneaPiano extends React.Component {
     });
   };
 
-  // recordNotes = (midiNumbers, duration) => {
-  //   const newEvents = midiNumbers.map(midiNumber => {
-  //     return {
-  //       midiNumber,
-  //       time: this.props.currentTime,
-  //       duration: duration
-  //     };
-  //   });
-  //   this.props.setRecording({
-  //     events: this.props.events.concat(newEvents),
-  //     currentTime: this.props.currentTime + duration
-  //   });
-  // };
+  recordNotes = (midiNumbers, duration) => {
+    const newEvents = midiNumbers.map(midiNumber => {
+      return {
+        midiNumber,
+        time: this.props.currentTime,
+        duration: duration
+      };
+    });
+    this.props.setRecording({
+      events: this.props.events.concat(newEvents),
+      currentTime: this.props.currentTime + duration
+    });
+  };
 
   // onPlayNoteInput = midiNumber => {
   //   this.setState({

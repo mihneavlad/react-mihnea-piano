@@ -140,7 +140,7 @@ class App extends React.Component {
         <div className="mt-5 text-center">
           <MihneaPiano
             noteRange={noteRange}
-            width={300}
+            width={500}
             audioContext={audioContext}
           />
         </div>
