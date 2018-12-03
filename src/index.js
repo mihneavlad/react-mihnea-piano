@@ -26,46 +26,16 @@ library.add(faPlayCircle, faKey);
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 const noteRange = {
-  first: MidiNumbers.fromNote("c1"),
-  last: MidiNumbers.fromNote("g3")
+  first: MidiNumbers.fromNote("c3"),
+  last: MidiNumbers.fromNote("f4")
 };
-
-// const recordAudio = () =>
-//   new Promise(async resolve => {
-//     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-//     const mediaRecorder = new MediaRecorder(stream);
-//     const recording = [];
-//
-//     mediaRecorder.addEventListener("dataavailable", event => {
-//       recording.push(event.data);
-//
-//       console.log(event.data);
-//     });
-//
-//     const start = () => mediaRecorder.start();
-//
-//     const stop = () =>
-//       new Promise(resolve => {
-//         mediaRecorder.addEventListener("stop", () => {
-//           const recordingBlob = new Blob(recording);
-//           const audioUrl = URL.createObjectURL(recordingBlob);
-//           const audio = new Audio(audioUrl);
-//           const play = () => audio.play();
-//           resolve({ recordingBlob, audioUrl, play });
-//         });
-//
-//         mediaRecorder.stop();
-//       });
-//
-//     resolve({ start, stop });
-//   });
 
 // Setting initial state, setting states for the various scenarios, start recording, stop recording, play recording.
 
 class App extends React.Component {
   state = {
-    recording: false,
-    playing: false,
+    situation: "record",
+    events: [],
     currentTime: 0,
     currentEvents: []
   };
@@ -87,13 +57,13 @@ class App extends React.Component {
 
   setRecording = value => {
     this.setState({
-      recording: Object.assign({}, this.state, value)
+      recording: Object.assign({}, this.state.situation, value)
     });
   };
 
   onClickPlay = () => {
     this.setRecording({
-      mode: "PLAYING"
+      situation: "play"
     });
     const startAndEndTimes = _.uniq(
       _.flatMap(this.state.events, event => [
@@ -168,7 +138,11 @@ class App extends React.Component {
         <h1 className="text-center mt-5">React Piano App by Mihnea</h1>
 
         <div className="mt-5 text-center">
-          <ResponsivePiano />
+          <MihneaPiano
+            noteRange={noteRange}
+            width={300}
+            audioContext={audioContext}
+          />
         </div>
         <div className="mt-5">
           <strong>Recorded notes</strong>
@@ -217,28 +191,28 @@ class App extends React.Component {
   }
 }
 
-function ResponsivePiano(props) {
-  return (
-    <DimensionsProvider>
-      {({ containerWidth, containerHeight }) => (
-        <MihneaPiano
-          instrumentName="acoustic_grand_piano"
-          audioContext={audioContext}
-          render={({ isLoading, playNote, stopNote }) => (
-            <Piano
-              noteRange={noteRange}
-              width={containerWidth}
-              playNote={playNote}
-              stopNote={stopNote}
-              disabled={isLoading}
-              {...props}
-            />
-          )}
-        />
-      )}
-    </DimensionsProvider>
-  );
-}
+// function ResponsivePiano(props) {
+//   return (
+//     <DimensionsProvider>
+//       {({ containerWidth, containerHeight }) => (
+//         <MihneaPiano
+//           instrumentName="acoustic_grand_piano"
+//           audioContext={audioContext}
+//           render={({ isLoading, playNote, stopNote }) => (
+//             <MihneaPiano
+//               noteRange={noteRange}
+//               width={containerWidth}
+//               playNote={playNote}
+//               stopNote={stopNote}
+//               disabled={isLoading}
+//               {...props}
+//             />
+//           )}
+//         />
+//       )}
+//     </DimensionsProvider>
+//   );
+// }
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);

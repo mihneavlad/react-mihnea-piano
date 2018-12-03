@@ -1,9 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Soundfont from "soundfont-player";
-import { Piano } from "react-piano";
+import { Piano, MidiNumbers } from "react-piano";
 
-class mihneaPiano extends React.Component {
+const noteRange = {
+  first: MidiNumbers.fromNote("c3"),
+  last: MidiNumbers.fromNote("f4")
+};
+
+class MihneaPiano extends React.Component {
   static propTypes = {
     instrumentName: PropTypes.string.isRequired,
     // hostname: PropTypes.string.isRequired,
@@ -78,55 +83,66 @@ class mihneaPiano extends React.Component {
     });
   };
 
-  recordNotes = (midiNumbers, duration) => {
-    const newEvents = midiNumbers.map(midiNumber => {
-      return {
-        midiNumber,
-        time: this.props.currentTime,
-        duration: duration
-      };
-    });
-    this.props.setRecording({
-      events: this.props.events.concat(newEvents),
-      currentTime: this.props.currentTime + duration
-    });
-  };
+  // recordNotes = (midiNumbers, duration) => {
+  //   const newEvents = midiNumbers.map(midiNumber => {
+  //     return {
+  //       midiNumber,
+  //       time: this.props.currentTime,
+  //       duration: duration
+  //     };
+  //   });
+  //   this.props.setRecording({
+  //     events: this.props.events.concat(newEvents),
+  //     currentTime: this.props.currentTime + duration
+  //   });
+  // };
 
-  onPlayNoteInput = midiNumber => {
-    this.setState({
-      notesRecorded: false
-    });
-  };
-
-  onStopNoteInput = (midiNumber, { prevActiveNotes }) => {
-    if (this.state.notesRecorded === false) {
-      this.recordNotes(prevActiveNotes, this.state.noteDuration);
-      this.setState({
-        notesRecorded: true
-        // noteDuration: DEFAULT_NOTE_DURATION
-      });
-    }
-  };
+  // onPlayNoteInput = midiNumber => {
+  //   this.setState({
+  //     notesRecorded: false
+  //   });
+  // };
+  //
+  // onStopNoteInput = (midiNumber, { prevActiveNotes }) => {
+  //   if (this.state.notesRecorded === false) {
+  //     this.recordNotes(prevActiveNotes, this.state.noteDuration);
+  //     this.setState({
+  //       notesRecorded: true
+  //       // noteDuration: DEFAULT_NOTE_DURATION
+  //     });
+  //   }
+  // };
 
   render() {
-    const { playNote, stopNote, setRecording, ...pianoProps } = this.props;
-    const { currentEvents } = this.props;
+    // const {
+    //   playNote,
+    //   stopNote,
+    //   recording,
+    //   setRecording,
+    //   ...pianoProps
+    // } = this.props;
+    // const { situation, currentEvents } = this.props;
     // console.log(currentEvents);
-    // const activeNotes = currentEvents.map(event => event.midiNumber);
+    // const activeNotes =
+    //   situation === "play"
+    //     ? currentEvents.map(event => event.midiNumber)
+    //     : null;
 
     return (
       <div>
         <Piano
-          playNote={this.props.playNote}
-          stopNote={this.props.stopNote}
+          playNote={this.playNote}
+          stopNote={this.stopNote}
+          noteRange={noteRange}
+          width={500}
           // onPlayNoteInput={this.onPlayNoteInput}
           // onStopNoteInput={this.onStopNoteInput}
           // activeNotes={activeNotes}
-          {...pianoProps}
+          // {...pianoProps}
         />
       </div>
     );
   }
 }
 
-export default mihneaPiano;
+export default MihneaPiano;
