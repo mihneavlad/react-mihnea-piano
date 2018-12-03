@@ -7552,15 +7552,7 @@ sockjs@0.3.19:
     faye-websocket "^0.10.0"
     uuid "^3.0.1"
 
-soundfont-player@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/soundfont-player/-/soundfont-player-0.11.0.tgz#1bc9e25248ef6257efb96ef812db8d7ae3b1c544"
-  dependencies:
-    audio-loader "^0.5.0"
-    note-parser "^2.0.0"
-    sample-player "^0.5.5"
-
-soundfont-player@danigb/soundfont-player:
+soundfont-player@^0.11.0, soundfont-player@danigb/soundfont-player:
   version "0.11.0"
   resolved "https://codeload.github.com/danigb/soundfont-player/tar.gz/42f2e6ee5afb84dc5c483a906f7b9d108ba2c0ad"
   dependencies:

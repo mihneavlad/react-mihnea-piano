@@ -5,6 +5,7 @@ import "react-piano/dist/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, ButtonGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import _ from "lodash";
 
 import DimensionsProvider from "./DimensionsProvider";
 import MihneaPiano from "./MihneaPiano";
@@ -62,12 +63,80 @@ const noteRange = {
 // Setting initial state, setting states for the various scenarios, start recording, stop recording, play recording.
 
 class App extends React.Component {
-  // state = {
-  //   recorder: {},
-  //   player: {},
-  //   recording: false,
-  //   playing: false
-  // };
+  state = {
+    recording: false,
+    playing: false,
+    currentTime: 0,
+    currentEvents: []
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.scheduledEvents = [];
+  }
+
+  getRecordingEndTime = () => {
+    if (this.state.events.length === 0) {
+      return 0;
+    }
+    return Math.max(
+      ...this.state.events.map(event => event.time + event.duration)
+    );
+  };
+
+  setRecording = value => {
+    this.setState({
+      recording: Object.assign({}, this.state, value)
+    });
+  };
+
+  onClickPlay = () => {
+    this.setRecording({
+      mode: "PLAYING"
+    });
+    const startAndEndTimes = _.uniq(
+      _.flatMap(this.state.events, event => [
+        event.time,
+        event.time + event.duration
+      ])
+    );
+    startAndEndTimes.forEach(time => {
+      this.scheduledEvents.push(
+        setTimeout(() => {
+          const currentEvents = this.state.events.filter(event => {
+            return event.time <= time && event.time + event.duration > time;
+          });
+          this.setRecording({
+            currentEvents
+          });
+        }, time * 1000)
+      );
+    });
+    // Stop at the end
+    setTimeout(() => {
+      this.onClickStop();
+    }, this.getRecordingEndTime() * 1000);
+  };
+
+  onClickStop = () => {
+    this.scheduledEvents.forEach(scheduledEvent => {
+      clearTimeout(scheduledEvent);
+    });
+    this.setRecording({
+      currentEvents: []
+    });
+  };
+
+  onClickClear = () => {
+    this.onClickStop();
+    this.setRecording({
+      events: [],
+      currentEvents: [],
+      currentTime: 0
+    });
+  };
+
   //
   // startRecording = async () => {
   //   const recorder = await recordAudio();
@@ -100,6 +169,10 @@ class App extends React.Component {
 
         <div className="mt-5 text-center">
           <ResponsivePiano />
+        </div>
+        <div className="mt-5">
+          <strong>Recorded notes</strong>
+          <div>{JSON.stringify(this.state.events)}</div>
         </div>
       </div>
       //   // <ButtonGroup className="d-flex justify-content-around">

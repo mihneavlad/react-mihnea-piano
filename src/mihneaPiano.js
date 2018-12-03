@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Soundfont from "soundfont-player";
+import { Piano } from "react-piano";
 
 class mihneaPiano extends React.Component {
   static propTypes = {
     instrumentName: PropTypes.string.isRequired,
-    hostname: PropTypes.string.isRequired,
+    // hostname: PropTypes.string.isRequired,
     format: PropTypes.oneOf(["mp3"]),
     soundfont: PropTypes.oneOf(["MusyngKite"]),
     audioContext: PropTypes.instanceOf(window.AudioContext),
@@ -77,13 +78,54 @@ class mihneaPiano extends React.Component {
     });
   };
 
-  render() {
-    return this.props.render({
-      isLoading: !this.state.instrument,
-      playNote: this.playNote,
-      stopNote: this.stopNote,
-      stopAllNotes: this.stopAllNotes
+  recordNotes = (midiNumbers, duration) => {
+    const newEvents = midiNumbers.map(midiNumber => {
+      return {
+        midiNumber,
+        time: this.props.currentTime,
+        duration: duration
+      };
     });
+    this.props.setRecording({
+      events: this.props.events.concat(newEvents),
+      currentTime: this.props.currentTime + duration
+    });
+  };
+
+  onPlayNoteInput = midiNumber => {
+    this.setState({
+      notesRecorded: false
+    });
+  };
+
+  onStopNoteInput = (midiNumber, { prevActiveNotes }) => {
+    if (this.state.notesRecorded === false) {
+      this.recordNotes(prevActiveNotes, this.state.noteDuration);
+      this.setState({
+        notesRecorded: true
+        // noteDuration: DEFAULT_NOTE_DURATION
+      });
+    }
+  };
+
+  render() {
+    const { playNote, stopNote, setRecording, ...pianoProps } = this.props;
+    const { currentEvents } = this.props;
+    // console.log(currentEvents);
+    // const activeNotes = currentEvents.map(event => event.midiNumber);
+
+    return (
+      <div>
+        <Piano
+          playNote={this.props.playNote}
+          stopNote={this.props.stopNote}
+          // onPlayNoteInput={this.onPlayNoteInput}
+          // onStopNoteInput={this.onStopNoteInput}
+          // activeNotes={activeNotes}
+          {...pianoProps}
+        />
+      </div>
+    );
   }
 }
 
