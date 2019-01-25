@@ -2,7 +2,7 @@
 
 ![Screenshot](rpa-1.jpg)
 
-One of my first react apps created with [Create React App](https://github.com/facebook/create-react-app).
+A responsive react app created with [Create React App](https://github.com/facebook/create-react-app).
 Used react, bootstrap, css, react-soundfont-player, MediaStream Recording API.
 
 ## App Info
