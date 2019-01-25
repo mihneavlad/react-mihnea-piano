@@ -10,7 +10,7 @@ Used react, bootstrap, css, react-soundfont-player, MediaStream Recording API.
 ```bash
 
 # Clone the repository
-https://github.com/mihneavlad/react-scissors-rock-paper.git
+https://github.com/mihneavlad/react-mihnea-piano.git
 
 # Install dependencies
 yarn install
